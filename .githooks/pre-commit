@@ -1,0 +1,12 @@
+#!/bin/bash
+DOCS_FILE="docs/$(git branch --show-current | tr '/' '-').md"
+DIFF=$(git diff --cached | head -c 4000)
+[ -z "$DIFF" ] && exit 0
+
+PROMPT="Generate a brief Markdown doc for this commit: a Summary,
+Modified Components list, and a Mermaid Component Diagram.
+Changes:
+${DIFF}"
+
+claude --model claude-haiku-4-5-20251001 -p "$PROMPT" --output-format text > "$DOCS_FILE" \
+  && git add "$DOCS_FILE"
